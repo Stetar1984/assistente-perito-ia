@@ -3,51 +3,50 @@ from docx import Document
 from docx.shared import Inches
 import io
 
-st.set_page_config(page_title="Perito AI", layout="centered")
+st.set_page_config(page_title="Perito AI Assistant", layout="centered")
 
-st.title("🛡️ Assistente Perito Professionale")
+st.title("🛡️ Assistente Perito: Report Veloce")
+st.write("Compila i campi e scatta le foto per generare il Word istantaneamente.")
 
-# 1. ANAGRAFICA (Risparmio tempo: inserimento unico)
+# Sezione Dati - Elimina la necessità di formattare l'intestazione a mano
 with st.container():
     col1, col2 = st.columns(2)
-    n_pratica = col1.text_input("Numero Pratica")
+    n_pratica = col1.text_input("N. Pratica")
     assicurato = col2.text_input("Nome Assicurato")
 
-# 2. NOTE (Risparmio tempo: dettatura vocale invece di scrittura)
+# Sezione Note - Qui il perito risparmia tempo con la dettatura vocale
 st.subheader("📝 Descrizione Danni")
-st.caption("Consiglio: usa l'icona del microfono sulla tastiera del telefono per dettare.")
-note_tecniche = st.text_area("Inserisci i rilievi tecnici:", height=150)
+note_tecniche = st.text_area("Usa il microfono della tastiera per dettare i rilievi:", height=150)
 
-# 3. FOTO (Risparmio tempo: impaginazione automatica)
+# Sezione Foto - Elimina il caricamento e ridimensionamento manuale su PC
 st.subheader("📸 Allegati Fotografici")
-foto_files = st.file_uploader("Carica o scatta foto", accept_multiple_files=True, type=['jpg', 'jpeg', 'png'])
+foto_files = st.file_uploader("Carica o scatta foto dei danni", accept_multiple_files=True, type=['jpg', 'jpeg', 'png'])
 
-# 4. GENERAZIONE (Il risparmio del 40% avviene qui)
-if st.button("🚀 Genera e Scarica Perizia Word"):
+if st.button("🚀 Genera e Scarica Report Word"):
     if not n_pratica or not note_tecniche:
-        st.error("Inserisci Numero Pratica e Descrizione per scaricare il file.")
+        st.error("Inserire almeno N. Pratica e Descrizione Danni.")
     else:
         doc = Document()
         doc.add_heading(f"Perizia Tecnica - Pratica {n_pratica}", 0)
         doc.add_paragraph(f"Assicurato: {assicurato}")
         
-        doc.add_heading('Rilievi Tecnici Riscontrati', level=1)
+        doc.add_heading('Dettaglio Rilievi', level=1)
         doc.add_paragraph(note_tecniche)
         
         if foto_files:
             doc.add_heading('Documentazione Fotografica', level=1)
             for f in foto_files:
                 img_stream = io.BytesIO(f.read())
-                doc.add_paragraph(f"Allegato: {f.name}")
-                doc.add_picture(img_stream, width=Inches(3.5)) # Impagina 2 foto per pagina circa
+                doc.add_paragraph(f"Foto allegata: {f.name}")
+                # Ridimensionamento automatico per risparmiare tempo in Word
+                doc.add_picture(img_stream, width=Inches(3.5))
         
-        # Generazione file in memoria
         buffer = io.BytesIO()
         doc.save(buffer)
         st.download_button(
-            label="⬇️ Clicca qui per scaricare il Word",
+            label="⬇️ Scarica File Word",
             data=buffer.getvalue(),
             file_name=f"Perizia_{n_pratica}.docx",
             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         )
-        st.success("Documento pronto!")
+        st.success("Documento pronto per l'invio!")
