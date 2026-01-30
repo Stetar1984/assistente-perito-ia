@@ -1,0 +1,6 @@
+openai
+python-docx
+streamlit
+ultralytics
+easyocr
+python-dotenv
