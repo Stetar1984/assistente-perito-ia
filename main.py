@@ -162,7 +162,7 @@ if st.button("Genera verbale .docx"):
             photos=photo_items
         )
 
-        st.download_button(
+        st.download_button()
             label="Scarica verbale .docx",
             data=docx_bytes,
             file_name=f"PERITIUM_{safe_filename(n_pratica)}.docx",
